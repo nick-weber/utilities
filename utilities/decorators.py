@@ -6,6 +6,7 @@ https://realpython.com/primer-on-python-decorators/
 
 import functools
 import time
+import pint
 
 
 def timer(func):
@@ -64,3 +65,53 @@ def repeat(_func=None, *, num_times=2):
         return decorator_repeat
     else:                         # no argument(s) passed
         return decorator_repeat(_func)
+
+
+def count_calls(_func, *, verbose=True):
+    """Keeps track of the number of times a function is called"""
+    def decorator_count_calls(func):
+        @functools.wraps(func)
+        def wrapper_count_calls(*args, **kwargs):
+            wrapper_count_calls.num_calls += 1
+            if verbose:
+                print(f"Call {wrapper_count_calls.num_calls} of {func.__name__!r}")
+            return func(*args, **kwargs)
+        wrapper_count_calls.num_calls = 0
+        return wrapper_count_calls
+
+    if _func is None:             # argument(s) passed
+        return decorator_count_calls
+    else:                         # no argument(s) passed
+        return decorator_count_calls(_func)
+
+
+def cache(func):
+    """Keeps a cache of previous function calls"""
+    @functools.wraps(func)
+    def wrapper_cache(*args, **kwargs):
+        cache_key = args + tuple(kwargs.items())
+        if cache_key not in wrapper_cache.cache:
+            wrapper_cache.cache[cache_key] = func(*args, **kwargs)
+        return wrapper_cache.cache[cache_key]
+    wrapper_cache.cache = dict()
+    return wrapper_cache
+
+
+def set_unit(unit):
+    """Register a unit on a function"""
+    def decorator_set_unit(func):
+        func.unit = unit
+        return func
+    return decorator_set_unit
+
+
+def use_unit(unit):
+    """Have a function return a Quantity with given unit"""
+    use_unit.ureg = pint.UnitRegistry()
+    def decorator_use_unit(func):
+        @functools.wraps(func)
+        def wrapper_use_unit(*args, **kwargs):
+            value = func(*args, **kwargs)
+            return value * use_unit.ureg(unit)
+        return wrapper_use_unit
+    return decorator_use_unit

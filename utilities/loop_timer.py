@@ -69,6 +69,8 @@ class LoopTimer:
         else:
             print(pct_str + 'ETA {:%H:%M:%S}      '.format(eta) + lstr)
         sys.stdout.flush()
+        if self.current_frac == 1:
+            print('')
 
 
 if __name__ == "__main__":

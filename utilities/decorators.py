@@ -134,11 +134,15 @@ def nc_dump(_func=None, *, filename=None):
                 nc_filename = '_'.join([str(a) for a in all_args]) + '.nc'
             else:
                 nc_filename = filename
-            if os.path.isfile(nc_filename):
-                ds = xarray.open_dataset(nc_filename)
+            nc_dir = os.path.join(os.getcwd(), 'nc_dump')
+            nc_fullpath = os.path.join(nc_dir, nc_filename)
+            if os.path.isfile(nc_fullpath):
+                ds = xarray.open_dataset(nc_fullpath)
             else:
                 ds = func(*args, **kwargs)
-                ds.to_netcdf(nc_filename)
+                if not os.path.isdir(nc_dir):
+                    os.makedirs(nc_dir)
+                ds.to_netcdf(nc_fullpath)
             return ds
         return wrapper_nc_dump
 

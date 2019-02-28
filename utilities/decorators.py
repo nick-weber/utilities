@@ -119,7 +119,7 @@ def use_unit(unit):
     return decorator_use_unit
 
 
-def nc_dump(_func=None, *, filename=None):
+def nc_dump(_func=None, *, filename=None, keep_chars=15):
     """
     Wraps a function that returns an xarray Dataset.
     If this is the first execution of that function, the Dataset
@@ -134,7 +134,7 @@ def nc_dump(_func=None, *, filename=None):
                 nc_filename = '_'.join([str(a) for a in all_args])
                 for badstr in [' ', ':', '(', ')', '[', ']', '\n', ',', '.']:
                     nc_filename = nc_filename.replace(badstr, '')
-                nc_filename += '.nc'
+                nc_filename = nc_filename[:keep_chars] + '.nc'
             else:
                 nc_filename = filename
             nc_dir = os.path.join(os.getcwd(), 'nc_dump')

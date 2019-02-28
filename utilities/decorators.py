@@ -7,6 +7,8 @@ https://realpython.com/primer-on-python-decorators/
 import functools
 import time
 import pint
+import os
+import xarray
 
 
 def timer(func):
@@ -115,3 +117,32 @@ def use_unit(unit):
             return value * use_unit.ureg(unit)
         return wrapper_use_unit
     return decorator_use_unit
+
+
+def nc_dump(_func=None, *, filename=None):
+    """
+    Wraps a function that returns an xarray Dataset.
+    If this is the first execution of that function, the Dataset
+    will be dumped to netCDF. If not, then the previously dumped
+    netCDF will be loaded instead of executing the function again.
+    """
+    def decorator_nc_dump(func):
+        @functools.wraps(func)
+        def wrapper_nc_dump(*args, **kwargs):
+            if filename is None:
+                all_args = args + tuple([str(k)+str(v) for k,v in kwargs.items()])
+                nc_filename = '_'.join([str(a) for a in all_args]) + '.nc'
+            else:
+                nc_filename = filename
+            if os.path.isfile(nc_filename):
+                ds = xarray.open_dataset(nc_filename)
+            else:
+                ds = func(*args, **kwargs)
+                ds.to_netcdf(nc_filename)
+            return ds
+        return wrapper_nc_dump
+
+    if _func is None:             # argument(s) passed
+        return decorator_nc_dump
+    else:                         # no argument(s) passed
+        return decorator_nc_dump(_func)

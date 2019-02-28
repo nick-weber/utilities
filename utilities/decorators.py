@@ -125,6 +125,14 @@ def nc_dump(_func=None, *, filename=None, keep_chars=15):
     If this is the first execution of that function, the Dataset
     will be dumped to netCDF. If not, then the previously dumped
     netCDF will be loaded instead of executing the function again.
+
+    Args
+    ----
+    filename : str
+        Name of the netcdf file to be written/read (optional).
+    keep_chars : int
+        The maximum number of characters in the auto-generated netcdf
+        filename (only applies if filename is None).
     """
     def decorator_nc_dump(func):
         @functools.wraps(func)

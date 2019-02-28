@@ -132,6 +132,8 @@ def nc_dump(_func=None, *, filename=None):
             if filename is None:
                 all_args = args + tuple([str(k)+str(v) for k,v in kwargs.items()])
                 nc_filename = '_'.join([str(a) for a in all_args]) + '.nc'
+                for badstr in [' ', ':', '(', ')', '[', ']', '\n', ',']:
+                    nc_filename = nc_filename.replace(badstr, '')
             else:
                 nc_filename = filename
             nc_dir = os.path.join(os.getcwd(), 'nc_dump')

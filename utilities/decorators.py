@@ -119,7 +119,7 @@ def use_unit(unit):
     return decorator_use_unit
 
 
-def nc_dump(_func=None, *, filename=None, keep_chars=15):
+def nc_dump(_func=None, *, filename=None, store_path=None, keep_chars=15):
     """
     Wraps a function that returns an xarray Dataset.
     If this is the first execution of that function, the Dataset
@@ -130,6 +130,8 @@ def nc_dump(_func=None, *, filename=None, keep_chars=15):
     ----
     filename : str
         Name of the netcdf file to be written/read (optional).
+    store_path : str
+        Path to directory where nc_dump subdirectory will be created (for netcdf storage).
     keep_chars : int
         The maximum number of characters in the auto-generated netcdf
         filename (only applies if filename is None).
@@ -145,7 +147,10 @@ def nc_dump(_func=None, *, filename=None, keep_chars=15):
                 nc_filename = nc_filename[:keep_chars] + '.nc'
             else:
                 nc_filename = filename
-            nc_dir = os.path.join(os.getcwd(), 'nc_dump')
+            if store_path is None:
+                nc_dir = os.path.join(os.getcwd(), 'nc_dump')
+            else:
+                nc_dir = os.path.join(store_path, 'nc_dump')
             nc_fullpath = os.path.join(nc_dir, nc_filename)
             if os.path.isfile(nc_fullpath):
                 ds = xarray.open_dataset(nc_fullpath)

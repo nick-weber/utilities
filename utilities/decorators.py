@@ -140,7 +140,7 @@ def nc_dump(_func=None, *, filename=None, store_path=None, keep_chars=15):
         @functools.wraps(func)
         def wrapper_nc_dump(*args, **kwargs):
             if filename is None:
-                if 'nc_dump_file' in kwargs.values() and kwargs['nc_dump_file'] is not None:
+                if 'nc_dump_file' in kwargs.keys() and kwargs['nc_dump_file'] is not None:
                     nc_filename = kwargs['nc_dump_file']
                 else:
                     all_args = args + tuple([str(k)+str(v) for k,v in kwargs.items()])

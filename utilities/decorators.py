@@ -140,11 +140,14 @@ def nc_dump(_func=None, *, filename=None, store_path=None, keep_chars=15):
         @functools.wraps(func)
         def wrapper_nc_dump(*args, **kwargs):
             if filename is None:
-                all_args = args + tuple([str(k)+str(v) for k,v in kwargs.items()])
-                nc_filename = '_'.join([str(a) for a in all_args])
-                for badstr in [' ', ':', '(', ')', '[', ']', '\n', ',', '.']:
-                    nc_filename = nc_filename.replace(badstr, '')
-                nc_filename = nc_filename[:keep_chars] + '.nc'
+                if 'nc_dump_file' in kwargs.values() and kwargs['nc_dump_file'] is not None:
+                    nc_filename = kwargs['nc_dump_file']
+                else:
+                    all_args = args + tuple([str(k)+str(v) for k,v in kwargs.items()])
+                    nc_filename = '_'.join([str(a) for a in all_args])
+                    for badstr in [' ', ':', '(', ')', '[', ']', '\n', ',', '.']:
+                        nc_filename = nc_filename.replace(badstr, '')
+                    nc_filename = nc_filename[:keep_chars] + '.nc'
             else:
                 nc_filename = filename
             if store_path is None:

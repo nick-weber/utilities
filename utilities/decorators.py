@@ -161,7 +161,8 @@ def nc_dump(_func=None, *, filename=None, store_path=None, keep_chars=15):
                 ds = func(*args, **kwargs)
                 if not os.path.isdir(nc_dir):
                     os.makedirs(nc_dir)
-                ds.to_netcdf(nc_fullpath)
+                if ds is not None:
+                    ds.to_netcdf(nc_fullpath)
             return ds
         return wrapper_nc_dump
 
